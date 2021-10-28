@@ -3,8 +3,9 @@
 An attempt at finding truly random content on youtube by crawling comments and their authors' videos.
 
 # Setup
-* HTTP proxies are required
-* A redis server is required
+Requirements:
+* HTTP proxies
+* Redis server
 
 ```bash
 pip install -r requirements.txt
