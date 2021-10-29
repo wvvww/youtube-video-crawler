@@ -12,7 +12,7 @@ class Controller:
     def __init__(self, arguments):
         self.args = arguments
         self.proxies = []
-        self.crawl_queue = Queue()
+        self.crawl_queue = multiprocessing.Queue()
         self.redis_info = dict(
             host=self.args.redis_host,
             port=self.args.redis_port,
