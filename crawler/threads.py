@@ -159,7 +159,6 @@ def crawler(
                         "\r\n"
                     ).encode())
                     resp = sock.recv(1024000)
-                    print(resp[:3000])
                     
                     if resp.startswith(b"HTTP/1.0 404"):
                         print(f"DROPPED: Video {target} does not exist.")
