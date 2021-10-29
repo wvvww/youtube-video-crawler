@@ -177,7 +177,6 @@ def crawler(
 
                     for page in range(5):
                         payload = '{"context":{"client":{"clientName":"WEB","clientVersion":"2.20211025.01.00"},"user":{"lockedSafetyMode":false}},"continuation":"%s"}' % continuation_key
-                        print(payload)
                         sock.sendall((
                             "POST /youtubei/v1/next?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8 HTTP/1.1\r\n"
                             "Host: www.youtube.com\r\n"
@@ -200,6 +199,7 @@ def crawler(
                         while not body.endswith(b"0\r\n\r\n"):
                             body += sock.recv(100000)
                         body = parse_chunked_body(body)
+                        print(body)
 
                         channel_ids = find_channel_ids(body)
                         for index, cached in enumerate(crawl_cache.mget(channel_ids)):
