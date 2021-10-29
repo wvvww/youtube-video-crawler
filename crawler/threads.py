@@ -110,7 +110,7 @@ def crawler(
                     except:
                         continue
                     
-                    for _ in range(100):
+                    for _ in range(5):
                         payload = '{"context":{"client":{"clientName":"WEB","clientVersion":"2.20211025.01.00"},"user":{"lockedSafetyMode":false}},"continuation":"%s"}' % continuation_key
                         sock.sendall((
                             "POST /youtubei/v1/browse?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8 HTTP/1.1\r\n"
@@ -170,7 +170,7 @@ def crawler(
                     
                     continuation_key = body.split(b'":{"token":"', 1)[1].split(b'"', 1)[0].decode()
 
-                    for page in range(100):
+                    for page in range(5):
                         payload = '{"context":{"client":{"clientName":"WEB","clientVersion":"2.20211025.01.00"},"user":{"lockedSafetyMode":false}},"continuation":"%s"}' % continuation_key
                         sock.sendall((
                             "POST /youtubei/v1/next?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8 HTTP/1.1\r\n"
