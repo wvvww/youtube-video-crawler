@@ -17,7 +17,7 @@ def parse_chunked_body(data):
         if not size: break
         temp += data[:size]
         data = data[size+2:]
-    temp = brotli.decompress(temp, -15)
+    temp = brotli.decompress(temp)
     return temp
 
 def find_channel_ids(data: bytes):
