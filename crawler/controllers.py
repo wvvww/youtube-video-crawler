@@ -1,7 +1,6 @@
 from .utils import parse_proxy_string, slice_list
 from .workers import worker_func
 from redis import Redis
-from faster_fifo import Queue
 import multiprocessing
 
 def clear_db(redis_info):
@@ -12,7 +11,7 @@ class Controller:
     def __init__(self, arguments):
         self.args = arguments
         self.proxies = []
-        self.crawl_queue = Queue(1024 ** 3)
+        self.crawl_queue = multiprocessing.Queue()
         self.redis_info = dict(
             host=self.args.redis_host,
             port=self.args.redis_port,
