@@ -11,7 +11,7 @@ class Controller:
     def __init__(self, arguments):
         self.args = arguments
         self.proxies = []
-        self.crawl_queue = multiprocessing.Queue()
+        self.pipe, self.worker_pipe = multiprocessing.Pipe()
         self.redis_info = dict(
             host=self.args.redis_host,
             port=self.args.redis_port,
@@ -39,7 +39,7 @@ class Controller:
         if not self.args.queue_file: return
         for line in self.args.queue_file:
             fields = line.split(",")
-            self.crawl_queue.put(fields)
+            self.pipe.send(fields)
 
     def start(self):
         workers = [
@@ -50,7 +50,7 @@ class Controller:
                     redis_kwargs=self.redis_info,
                     proxy_list=slice_list(
                         self.proxies, num, self.args.workers),
-                    crawl_queue=self.crawl_queue,
+                    crawl_queue=self.worker_pipe,
                 )
             )
             for num in range(self.args.workers)
