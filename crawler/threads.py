@@ -137,7 +137,7 @@ def crawler(
                         for video_id in find_video_ids(body):
                             if not crawl_cache.get(video_id):
                                 print(f"https://www.youtube.com/watch?v={video_id}")
-                                pipe_out.send(("video", video_id))
+                                crawl_queue.put(("video", video_id))
 
                         try:
                             continuation_key = body.split(b'":{"token": "', 1)[1].split(b'"', 1)[0].decode()
