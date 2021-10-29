@@ -193,6 +193,7 @@ def crawler(
 
                     for channel_id in find_channel_ids(body):
                         if not crawl_cache.get(channel_id):
+                            print(channel_id)
                             crawl_queue.send(("channel", channel_id))
                     
             except (socket.timeout, ssl.SSLError):
