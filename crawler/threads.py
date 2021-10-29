@@ -6,6 +6,8 @@ import socket
 import ssl
 import zlib
 
+CHANNEL = 1
+VIDEO = 2
 context = ssl.create_default_context()
 
 def parse_chunked_body(data):
@@ -70,16 +72,14 @@ def crawler(
         while True:
             target = None
             try:
-                t = perf_counter()
                 target_type, target = crawl_queue.get(True)
 
                 if crawl_cache.get(target):
                     continue
 
                 crawl_cache.set(target, 1)
-                print("%.5f" % (perf_counter()-t))
 
-                if target_type == "channel":
+                if target_type == CHANNEL:
                     sock.sendall((
                         f"GET /channel/{target}/videos HTTP/1.1\r\n"
                         "Host: www.youtube.com\r\n"
@@ -108,7 +108,7 @@ def crawler(
                         video_id = video_ids[index]
                         if not cached:
                             print(f"https://www.youtube.com/watch?v={video_id}")
-                            crawl_queue.put(("video", video_id))
+                            crawl_queue.put((VIDEO, video_id))
                         
                     try:
                         continuation_key = body.split(b'"token":"', 1)[1].split(b'"', 1)[0].decode()
@@ -144,14 +144,14 @@ def crawler(
                             video_id = video_ids[index]
                             if not cached:
                                 print(f"https://www.youtube.com/watch?v={video_id}")
-                                crawl_queue.put(("video", video_id))
+                                crawl_queue.put((VIDEO, video_id))
 
                         try:
                             continuation_key = body.split(b'":{"token": "', 1)[1].split(b'"', 1)[0].decode()
                         except:
                             break
 
-                elif target_type == "video":
+                elif target_type == VIDEO:
                     sock.sendall((
                         f"GET /watch?v={target} HTTP/1.1\r\n"
                         "Host: www.youtube.com\r\n"
@@ -205,7 +205,7 @@ def crawler(
                         for index, cached in enumerate(crawl_cache.mget(channel_ids)):
                             channel_id = channel_ids[index]
                             if not cached:
-                                crawl_queue.put(("channel", channel_id))
+                                crawl_queue.put((CHANNEL, channel_id))
 
                         if not b"RELOAD_CONTINUATION_SLOT_BODY" in body:
                             break
