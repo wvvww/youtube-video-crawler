@@ -38,7 +38,7 @@ class Controller:
     def load_queue_input(self):
         if not self.args.queue_file: return
         for line in self.args.queue_file:
-            fields = line.split(",")
+            fields = line.rstrip().split(",")
             self.crawl_queue.put(fields)
 
     def start(self):
