@@ -11,6 +11,10 @@ def parse_args():
         type=int,
         default=50)
     parser.add_argument(
+        "-m", "--max-queue-size",
+        type=int,
+        default=100000)
+    parser.add_argument(
         "-p", "--proxy-file",
         required=True,
         type=argparse.FileType("r", encoding="UTF-8", errors="ignore"))
