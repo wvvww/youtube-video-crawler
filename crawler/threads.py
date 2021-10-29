@@ -202,6 +202,7 @@ def crawler(
                         body = parse_chunked_body(body)
 
                         channel_ids = find_channel_ids(body)
+                        print(body, channel_ids)
                         for index, cached in enumerate(crawl_cache.mget(channel_ids)):
                             channel_id = channel_ids[index]
                             if not cached:
