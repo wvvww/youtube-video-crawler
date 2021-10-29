@@ -195,7 +195,7 @@ def crawler(
                             crawl_queue.put((target_type, target))
                             break
                         
-                        print(body)
+                        print(resp.split(b"\r\n\r\n", 1)[0])
                         body = resp.split(b"\r\n\r\n", 1)[1]
                         while not body.endswith(b"0\r\n\r\n"):
                             body += sock.recv(100000)
