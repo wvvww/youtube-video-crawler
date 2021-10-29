@@ -194,7 +194,8 @@ def crawler(
                             print(f"RE-ADDED: Comment API for video {target} returned non-OK status: {resp[:50]}")
                             crawl_queue.put((target_type, target))
                             break
-
+                        
+                        print(body)
                         body = resp.split(b"\r\n\r\n", 1)[1]
                         while not body.endswith(b"0\r\n\r\n"):
                             body += sock.recv(100000)
