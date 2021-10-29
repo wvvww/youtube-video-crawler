@@ -53,7 +53,7 @@ def crawler(
             sock.close()
             sock = None
         
-        proxy = next(proxy_iter, None)
+        proxy = next(proxy_iter)
 
         try:
             sock = socket.socket()
@@ -66,16 +66,14 @@ def crawler(
             sock = context.wrap_socket(sock, False, False, False, "www.youtube.com")
             sock.do_handshake()
         except:
-            pass
+            continue
 
         while True:
-            target = None
+            try: target_type, target = crawl_queue.get(True)
+            except: continue
+
             try:
-                target_type, target = crawl_queue.get(True)
-
-                if crawl_cache.get(target):
-                    continue
-
+                if crawl_cache.get(target): continue
                 crawl_cache.set(target, 1)
 
                 if target_type == CHANNEL:
