@@ -199,7 +199,6 @@ def crawler(
                                 crawl_queue.put(("channel", channel_id))
 
                         if not b"RELOAD_CONTINUATION_SLOT_BODY" in body:
-                            print(body)
                             break
 
                         continuation_key = body.rsplit(b'"token": "', 1)[1].split(b'"', 1)[0].decode()
