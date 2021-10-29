@@ -1,2 +1,3 @@
 CHANNEL = 1
 VIDEO = 2
+PLAYLIST = 3

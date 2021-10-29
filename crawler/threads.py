@@ -38,6 +38,15 @@ def find_video_ids(data: bytes):
         ids.add(data[offset+3:offset+14].decode())
         index = offset + 11
 
+def find_playlist_ids(data: bytes):
+    ids = set()
+    index = 0
+    while True:
+        offset = data.find(b"list=", index)
+        if offset == -1: return tuple(ids)
+        ids.add(data[offset+5:offset+39].decode())
+        index = offset + 34
+
 def crawler(
     crawl_queue: Queue,
     crawl_cache: Redis,
@@ -76,6 +85,39 @@ def crawler(
                 crawl_cache.set(target, 1)
 
                 if target_type == CHANNEL:
+                    # Get channel's playlists
+                    sock.sendall((
+                        f"GET /channel/{target}/playlists HTTP/1.1\r\n"
+                        "Host: www.youtube.com\r\n"
+                        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
+                        "Accept-Encoding: br\r\n"
+                        "\r\n"
+                    ).encode())
+                    resp = sock.recv(1024000)
+
+                    if resp.startswith(b"HTTP/1.0 404"):
+                        print(f"DROPPED: Channel {target} does not exist.")
+                        continue
+
+                    if not resp.startswith(b"HTTP/1.1 200"):
+                        print(f"RE-ADDED: Channel {target} returned non-OK status: {resp[:50]}")
+                        crawl_cache.delete(target)
+                        crawl_queue.put((target_type, target))
+                        break
+
+                    body = b""
+                    while not body.endswith(b"0\r\n\r\n"):
+                        body += sock.recv(100000)
+                    body = parse_chunked_body(body)
+
+                    playlist_ids = find_playlist_ids(body)
+                    for index, cached in enumerate(crawl_cache.mget(playlist_ids)):
+                        playlist_id = playlist_ids[index]
+                        if not cached:
+                            print(playlist_id)
+                            crawl_queue.put((PLAYLIST, playlist_id))
+                        
+                    #
                     sock.sendall((
                         f"GET /channel/{target}/videos HTTP/1.1\r\n"
                         "Host: www.youtube.com\r\n"
