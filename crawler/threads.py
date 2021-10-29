@@ -131,7 +131,8 @@ def crawler(
                             print(f"RE-ADDED: Video list API for channel {target} returned non-OK status: {resp[:50]}")
                             crawl_queue.put((target_type, target))
                             break
-
+                        
+                        print(resp.split(b"\r\n\r\n", 1)[0])
                         body = resp.split(b"\r\n\r\n", 1)[1]
                         while not body.endswith(b"0\r\n\r\n"):
                             body += sock.recv(100000)
