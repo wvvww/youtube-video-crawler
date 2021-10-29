@@ -70,6 +70,7 @@ def crawler(
             target = None
             try:
                 target_type, target = crawl_queue.recv()
+                print(target_type, target)
                 if crawl_cache.get(target):
                     continue
 
@@ -193,7 +194,6 @@ def crawler(
 
                     for channel_id in find_channel_ids(body):
                         if not crawl_cache.get(channel_id):
-                            print(channel_id)
                             crawl_queue.send(("channel", channel_id))
                     
             except (socket.timeout, ssl.SSLError):
