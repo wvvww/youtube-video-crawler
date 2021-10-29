@@ -17,6 +17,7 @@ def parse_chunked_body(data):
         if not size: break
         temp += data[:size]
         data = data[size+2:]
+    print(temp[:-5])
     if temp.endswith(b"\x00"):
         temp = brotli.decompress(temp, -15)
     return temp
