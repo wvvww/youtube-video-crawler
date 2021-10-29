@@ -18,7 +18,6 @@ def parse_chunked_body(data):
         temp += data[:size]
         data = data[size+2:]
     temp = brotli.decompress(temp)
-    print(temp)
     return temp
 
 def find_channel_ids(data: bytes):
@@ -174,6 +173,7 @@ def crawler(
                     while not body.endswith(b"0\r\n\r\n"):
                         body += sock.recv(100000)
                     body = parse_chunked_body(body)
+                    print("asds")
                     
                     continuation_key = body.split(b'":{"token":"', 1)[1].split(b'"', 1)[0].decode()
 
