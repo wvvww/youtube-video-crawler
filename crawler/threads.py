@@ -104,6 +104,45 @@ def crawler(
                         if not crawl_cache.get(video_id):
                             print(f"https://www.youtube.com/watch?v={video_id}")
                             crawl_queue.put(("video", video_id))
+                        
+                    try:
+                        continuation_key = body.split(b'"token":"', 1)[1].split(b'"', 1)[0].decode()
+                    except:
+                        continue
+                    
+                    for _ in range(100):
+                        payload = '{"context":{"client":{"clientName":"WEB","clientVersion":"2.20211025.01.00"},"user":{"lockedSafetyMode":false}},"continuation":"%s"}' % continuation_key
+                        sock.sendall((
+                            "POST /youtubei/v1/browse?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8 HTTP/1.1\r\n"
+                            "Host: www.youtube.com\r\n"
+                            "Accept-Encoding: deflate\r\n"
+                            f"Content-Length: {len(payload)}\r\n"
+                            "Content-Type: application/json\r\n"
+                            "\r\n"
+                            f"{payload}"
+                        ).encode())
+
+                        resp = sock.recv(102400)
+                        
+                        if not resp.startswith(b"HTTP/1.1 200"):
+                            print(f"RE-ADDED: Video list API for channel {target} returned non-OK status: {resp[:50]}")
+                            crawl_queue.put((target_type, target))
+                            break
+
+                        body = resp.split(b"\r\n\r\n", 1)[1]
+                        while not body.endswith(b"0\r\n\r\n"):
+                            body += sock.recv(100000)
+                        body = parse_chunked_body(body)
+
+                        for video_id in find_video_ids(body):
+                            if not crawl_cache.get(video_id):
+                                print(f"https://www.youtube.com/watch?v={video_id}")
+                                crawl_queue.put(("video", video_id))
+
+                        try:
+                            continuation_key = body.split(b'":{"token": "', 1)[1].split(b'"', 1)[0].decode()
+                        except:
+                            break
 
                 elif target_type == "video":
                     sock.sendall((
