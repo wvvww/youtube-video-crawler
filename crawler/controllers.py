@@ -50,8 +50,6 @@ class Controller:
                     redis_kwargs=self.redis_info,
                     proxy_list=slice_list(
                         self.proxies, num, self.args.workers),
-                    pipe_in=self.worker_pipe,
-                    pipe_out=self.pipe
                     crawl_queue=self.crawl_queue,
                 )
             )
