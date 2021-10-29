@@ -44,7 +44,7 @@ def find_playlist_ids(data: bytes):
     while True:
         offset = data.find(b"list=", index)
         if offset == -1: return tuple(ids)
-        ids.add(data[offset+5:offset+39].decode())
+        ids.add(data[offset+5:offset+39].split(b'"', 1)[0].decode())
         index = offset + 34
 
 def crawler(
@@ -283,7 +283,7 @@ def crawler(
                     for index, cached in enumerate(crawl_cache.mget(video_ids)):
                         video_id = video_ids[index]
                         if not cached:
-                            print(f"https://www.youtube.com/watch?v={video_id}", "from playlist", f"https://www.youtube.com/playlist?list={target}")
+                            print(f"https://www.youtube.com/watch?v={video_id}")
                             crawl_queue.put((VIDEO, video_id))
 
             except (socket.timeout, ssl.SSLError):
