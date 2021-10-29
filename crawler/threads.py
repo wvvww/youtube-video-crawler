@@ -18,6 +18,7 @@ def parse_chunked_body(data):
         temp += data[:size]
         data = data[size+2:]
     temp = brotli.decompress(temp)
+    print(temp)
     return temp
 
 def find_channel_ids(data: bytes):
@@ -202,7 +203,6 @@ def crawler(
                         body = parse_chunked_body(body)
 
                         channel_ids = find_channel_ids(body)
-                        print(body, channel_ids)
                         for index, cached in enumerate(crawl_cache.mget(channel_ids)):
                             channel_id = channel_ids[index]
                             if not cached:
