@@ -5,7 +5,7 @@ from redis import Redis
 from time import perf_counter
 import socket
 import ssl
-import zlib
+import brotli
 
 context = ssl.create_default_context()
 
@@ -18,7 +18,7 @@ def parse_chunked_body(data):
         temp += data[:size]
         data = data[size+2:]
     if temp.endswith(b"\x00"):
-        temp = zlib.decompress(temp, -15)
+        temp = brotli.decompress(temp, -15)
     return temp
 
 def find_channel_ids(data: bytes):
@@ -80,7 +80,7 @@ def crawler(
                     sock.sendall((
                         f"GET /channel/{target}/videos HTTP/1.1\r\n"
                         "Host: www.youtube.com\r\n"
-                        "Accept-Encoding: deflate\r\n"
+                        "Accept-Encoding: br\r\n"
                         "\r\n"
                     ).encode())
                     resp = sock.recv(1024000)
@@ -117,7 +117,7 @@ def crawler(
                         sock.sendall((
                             "POST /youtubei/v1/browse?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8 HTTP/1.1\r\n"
                             "Host: www.youtube.com\r\n"
-                            "Accept-Encoding: deflate\r\n"
+                            "Accept-Encoding: br\r\n"
                             f"Content-Length: {len(payload)}\r\n"
                             "Content-Type: application/json\r\n"
                             "\r\n"
@@ -152,7 +152,7 @@ def crawler(
                     sock.sendall((
                         f"GET /watch?v={target} HTTP/1.1\r\n"
                         "Host: www.youtube.com\r\n"
-                        "Accept-Encoding: deflate\r\n"
+                        "Accept-Encoding: br\r\n"
                         "\r\n"
                     ).encode())
                     resp = sock.recv(1024000)
@@ -179,7 +179,7 @@ def crawler(
                         sock.sendall((
                             "POST /youtubei/v1/next?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8 HTTP/1.1\r\n"
                             "Host: www.youtube.com\r\n"
-                            "Accept-Encoding: deflate\r\n"
+                            "Accept-Encoding: br\r\n"
                             f"Content-Length: {len(payload)}\r\n"
                             "Content-Type: application/json\r\n"
                             "\r\n"
