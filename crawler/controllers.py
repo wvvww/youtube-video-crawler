@@ -1,3 +1,4 @@
+from .constants import *
 from .utils import parse_proxy_string, slice_list
 from .workers import worker_func
 from redis import Redis
@@ -36,10 +37,14 @@ class Controller:
         self.proxies.extend(proxies)
 
     def load_queue_input(self):
+        target_type_map = {"channel": CHANNEL, "video": VIDEO}
         if not self.args.queue_file: return
         for line in self.args.queue_file:
-            fields = line.rstrip().split(",")
-            self.crawl_queue.put(fields)
+            target_type, target = line.rstrip().split(",", 1)
+            self.crawl_queue.put((
+                target_type_map[target_type.lower()],
+                target
+            ))
 
     def start(self):
         workers = [

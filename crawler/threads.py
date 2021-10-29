@@ -1,3 +1,4 @@
+from .constants import *
 from multiprocessing import Queue
 from typing import Iterator
 from redis import Redis
@@ -6,8 +7,6 @@ import socket
 import ssl
 import zlib
 
-CHANNEL = 1
-VIDEO = 2
 context = ssl.create_default_context()
 
 def parse_chunked_body(data):
