@@ -1,4 +1,4 @@
-from multiprocessing import Pipe
+from multiprocessing import Queue
 from typing import Iterator
 from redis import Redis
 import socket
@@ -38,8 +38,7 @@ def find_video_ids(data: bytes):
         index = offset + 11
 
 def crawler(
-    pipe_in: Pipe,
-    pipe_out: Pipe,
+    crawl_queue: Queue,
     crawl_cache: Redis,
     proxy_iter: Iterator
     ):
@@ -70,7 +69,12 @@ def crawler(
         while True:
             target = None
             try:
+<<<<<<< HEAD
                 target_type, target = pipe_in.recv()
+=======
+                target_type, target = crawl_queue.get(True)
+
+>>>>>>> parent of a63e4cd (x)
                 if crawl_cache.get(target):
                     continue
 
@@ -92,7 +96,11 @@ def crawler(
                     if not resp.startswith(b"HTTP/1.1 200"):
                         print(f"RE-ADDED: Channel {target} returned non-OK status: {resp[:50]}")
                         crawl_cache.delete(target)
+<<<<<<< HEAD
                         pipe_out.send((target_type, target))
+=======
+                        crawl_queue.put((target_type, target))
+>>>>>>> parent of a63e4cd (x)
                         break
 
                     body = b""
@@ -103,7 +111,11 @@ def crawler(
                     for video_id in find_video_ids(body):
                         if not crawl_cache.get(video_id):
                             print(f"https://www.youtube.com/watch?v={video_id}")
+<<<<<<< HEAD
                             pipe_out.send(("video", video_id))
+=======
+                            crawl_queue.put(("video", video_id))
+>>>>>>> parent of a63e4cd (x)
                         
                     try:
                         continuation_key = body.split(b'"token":"', 1)[1].split(b'"', 1)[0].decode()
@@ -126,7 +138,11 @@ def crawler(
                         
                         if not resp.startswith(b"HTTP/1.1 200"):
                             print(f"RE-ADDED: Video list API for channel {target} returned non-OK status: {resp[:50]}")
+<<<<<<< HEAD
                             pipe_out.send((target_type, target))
+=======
+                            crawl_queue.put((target_type, target))
+>>>>>>> parent of a63e4cd (x)
                             break
 
                         body = resp.split(b"\r\n\r\n", 1)[1]
@@ -160,7 +176,11 @@ def crawler(
                     if not resp.startswith(b"HTTP/1.1 200"):
                         print(f"RE-ADDED: Video {target} returned non-OK status: {resp[:50]}")
                         crawl_cache.delete(target)
+<<<<<<< HEAD
                         pipe_out.send((target_type, target))
+=======
+                        crawl_queue.put((target_type, target))
+>>>>>>> parent of a63e4cd (x)
                         break
 
                     body = b""
@@ -184,7 +204,11 @@ def crawler(
                     
                     if not resp.startswith(b"HTTP/1.1 200"):
                         print(f"RE-ADDED: Comment API for video {target} returned non-OK status: {resp[:50]}")
+<<<<<<< HEAD
                         pipe_out.send((target_type, target))
+=======
+                        crawl_queue.put((target_type, target))
+>>>>>>> parent of a63e4cd (x)
                         break
 
                     body = resp.split(b"\r\n\r\n", 1)[1]
@@ -194,7 +218,11 @@ def crawler(
 
                     for channel_id in find_channel_ids(body):
                         if not crawl_cache.get(channel_id):
+<<<<<<< HEAD
                             pipe_out.send(("channel", channel_id))
+=======
+                            crawl_queue.put(("channel", channel_id))
+>>>>>>> parent of a63e4cd (x)
                     
             except (socket.timeout, ssl.SSLError):
                 try: crawl_cache.delete(target)
