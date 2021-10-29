@@ -124,7 +124,7 @@ def crawler(
 
                         resp = sock.recv(102400)
                         
-                        if not resp.startswith(b"HTTP/1.0 200"):
+                        if not resp.startswith(b"HTTP/1.1 200"):
                             print(f"RE-ADDED: Video list API for channel {target} returned non-OK status: {resp[:50]}")
                             crawl_queue.put((target_type, target))
                             break
