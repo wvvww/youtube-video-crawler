@@ -38,6 +38,15 @@ def find_video_ids(data: bytes):
         ids.add(data[offset+3:offset+14].decode())
         index = offset + 11
 
+def find_playlist_ids(data: bytes):
+    ids = set()
+    index = 0
+    while True:
+        offset = data.find(b"list=", index)
+        if offset == -1: return tuple(ids)
+        ids.add(data[offset+5:offset+39].decode())
+        index = offset + 34
+
 def crawler(
     crawl_queue: Queue,
     crawl_cache: Redis,
@@ -212,7 +221,7 @@ def crawler(
                             break
 
                         continuation_key = body.rsplit(b'"token": "', 1)[1].split(b'"', 1)[0].decode()
-                    
+                        
             except (socket.timeout, ssl.SSLError):
                 try: crawl_cache.delete(target)
                 except: pass
