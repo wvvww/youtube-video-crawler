@@ -69,12 +69,8 @@ def crawler(
         while True:
             target = None
             try:
-<<<<<<< HEAD
-                target_type, target = pipe_in.recv()
-=======
                 target_type, target = crawl_queue.get(True)
 
->>>>>>> parent of a63e4cd (x)
                 if crawl_cache.get(target):
                     continue
 
