@@ -157,7 +157,7 @@ def crawler(
                         print(f"DROPPED: Video {target} does not exist.")
                         continue
 
-                    if not resp.startswith(b"HTTP/1.0 200"):
+                    if not resp.startswith(b"HTTP/1.1 200"):
                         print(f"RE-ADDED: Video {target} returned non-OK status: {resp[:50]}")
                         crawl_cache.delete(target)
                         crawl_queue.put((target_type, target))
