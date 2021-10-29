@@ -169,32 +169,39 @@ def crawler(
                     body = parse_chunked_body(body)
                     
                     continuation_key = body.split(b'":{"token":"', 1)[1].split(b'"', 1)[0].decode()
-                    payload = '{"context":{"client":{"clientName":"WEB","clientVersion":"2.20211025.01.00"},"user":{"lockedSafetyMode":false}},"continuation":"%s"}' % continuation_key
-                    sock.sendall((
-                        "POST /youtubei/v1/next?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8 HTTP/1.1\r\n"
-                        "Host: www.youtube.com\r\n"
-                        "Accept-Encoding: deflate\r\n"
-                        f"Content-Length: {len(payload)}\r\n"
-                        "Content-Type: application/json\r\n"
-                        "\r\n"
-                        f"{payload}"
-                    ).encode())
 
-                    resp = sock.recv(102400)
-                    
-                    if not resp.startswith(b"HTTP/1.1 200"):
-                        print(f"RE-ADDED: Comment API for video {target} returned non-OK status: {resp[:50]}")
-                        crawl_queue.put((target_type, target))
-                        break
+                    for _ in range(100):
+                        payload = '{"context":{"client":{"clientName":"WEB","clientVersion":"2.20211025.01.00"},"user":{"lockedSafetyMode":false}},"continuation":"%s"}' % continuation_key
+                        sock.sendall((
+                            "POST /youtubei/v1/next?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8 HTTP/1.1\r\n"
+                            "Host: www.youtube.com\r\n"
+                            "Accept-Encoding: deflate\r\n"
+                            f"Content-Length: {len(payload)}\r\n"
+                            "Content-Type: application/json\r\n"
+                            "\r\n"
+                            f"{payload}"
+                        ).encode())
 
-                    body = resp.split(b"\r\n\r\n", 1)[1]
-                    while not body.endswith(b"0\r\n\r\n"):
-                        body += sock.recv(100000)
-                    body = parse_chunked_body(body)
+                        resp = sock.recv(102400)
+                        
+                        if not resp.startswith(b"HTTP/1.1 200"):
+                            print(f"RE-ADDED: Comment API for video {target} returned non-OK status: {resp[:50]}")
+                            crawl_queue.put((target_type, target))
+                            break
 
-                    for channel_id in find_channel_ids(body):
-                        if not crawl_cache.get(channel_id):
-                            crawl_queue.put(("channel", channel_id))
+                        body = resp.split(b"\r\n\r\n", 1)[1]
+                        while not body.endswith(b"0\r\n\r\n"):
+                            body += sock.recv(100000)
+                        body = parse_chunked_body(body)
+
+                        for channel_id in find_channel_ids(body):
+                            if not crawl_cache.get(channel_id):
+                                crawl_queue.put(("channel", channel_id))
+
+                        if not b"RELOAD_CONTINUATION_SLOT_BODY" in body:
+                            break
+
+                        continuation_key =  body.rsplit(b'":{"token": "', 1)[1].split(b'"', 1)[0].decode()
                     
             except (socket.timeout, ssl.SSLError):
                 try: crawl_cache.delete(target)
