@@ -196,7 +196,6 @@ def crawler(
 
                         for channel_id in find_channel_ids(body):
                             if not crawl_cache.get(channel_id):
-                                print(page, channel_id)
                                 crawl_queue.put(("channel", channel_id))
 
                         if not b"RELOAD_CONTINUATION_SLOT_BODY" in body:
