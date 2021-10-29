@@ -71,7 +71,6 @@ def crawler(
             target = None
             try:
                 target_type, target = pipe_in.recv()
-                print(target_type, target)
                 if crawl_cache.get(target):
                     continue
 
