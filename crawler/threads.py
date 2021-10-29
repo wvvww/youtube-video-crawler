@@ -80,6 +80,7 @@ def crawler(
                     sock.sendall((
                         f"GET /channel/{target}/videos HTTP/1.1\r\n"
                         "Host: www.youtube.com\r\n"
+                        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
                         "Accept-Encoding: br\r\n"
                         "\r\n"
                     ).encode())
@@ -117,6 +118,7 @@ def crawler(
                         sock.sendall((
                             "POST /youtubei/v1/browse?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8 HTTP/1.1\r\n"
                             "Host: www.youtube.com\r\n"
+                            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
                             "Accept-Encoding: br\r\n"
                             f"Content-Length: {len(payload)}\r\n"
                             "Content-Type: application/json\r\n"
@@ -152,6 +154,7 @@ def crawler(
                     sock.sendall((
                         f"GET /watch?v={target} HTTP/1.1\r\n"
                         "Host: www.youtube.com\r\n"
+                        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
                         "Accept-Encoding: br\r\n"
                         "\r\n"
                     ).encode())
@@ -179,6 +182,7 @@ def crawler(
                         sock.sendall((
                             "POST /youtubei/v1/next?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8 HTTP/1.1\r\n"
                             "Host: www.youtube.com\r\n"
+                            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
                             "Accept-Encoding: br\r\n"
                             f"Content-Length: {len(payload)}\r\n"
                             "Content-Type: application/json\r\n"
