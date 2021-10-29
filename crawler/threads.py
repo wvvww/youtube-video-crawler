@@ -85,6 +85,38 @@ def crawler(
                 crawl_cache.set(target, 1)
 
                 if target_type == CHANNEL:
+                    # Get channel's playlists
+                    sock.sendall((
+                        f"GET /channel/{target}/playlists HTTP/1.1\r\n"
+                        "Host: www.youtube.com\r\n"
+                        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
+                        "Accept-Encoding: br\r\n"
+                        "\r\n"
+                    ).encode())
+                    resp = sock.recv(1024000)
+
+                    if resp.startswith(b"HTTP/1.0 404"):
+                        print(f"DROPPED: Channel {target} does not exist.")
+                        continue
+
+                    if not resp.startswith(b"HTTP/1.1 200"):
+                        print(f"RE-ADDED: Channel {target} returned non-OK status: {resp[:50]}")
+                        crawl_cache.delete(target)
+                        crawl_queue.put((target_type, target))
+                        break
+
+                    body = b""
+                    while not body.endswith(b"0\r\n\r\n"):
+                        body += sock.recv(100000)
+                    body = parse_chunked_body(body)
+
+                    playlist_ids = find_playlist_ids(body)
+                    for index, cached in enumerate(crawl_cache.mget(playlist_ids)):
+                        playlist_id = playlist_ids[index]
+                        if not cached:
+                            crawl_queue.put((PLAYLIST, playlist_id))
+                        
+                    #
                     sock.sendall((
                         f"GET /channel/{target}/videos HTTP/1.1\r\n"
                         "Host: www.youtube.com\r\n"
@@ -221,7 +253,39 @@ def crawler(
                             break
 
                         continuation_key = body.rsplit(b'"token": "', 1)[1].split(b'"', 1)[0].decode()
-                        
+
+                elif target_type == PLAYLIST:
+                    sock.sendall((
+                        f"GET /watch?v={target} HTTP/1.1\r\n"
+                        "Host: www.youtube.com\r\n"
+                        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
+                        "Accept-Encoding: br\r\n"
+                        "\r\n"
+                    ).encode())
+                    resp = sock.recv(1024000)
+                    
+                    if resp.startswith(b"HTTP/1.0 404"):
+                        print(f"DROPPED: Playlist {target} does not exist.")
+                        continue
+
+                    if not resp.startswith(b"HTTP/1.1 200"):
+                        print(f"RE-ADDED: Playlist {target} returned non-OK status: {resp[:50]}")
+                        crawl_cache.delete(target)
+                        crawl_queue.put((target_type, target))
+                        break
+
+                    body = b""
+                    while not body.endswith(b"0\r\n\r\n"):
+                        body += sock.recv(100000)
+                    body = parse_chunked_body(body)
+
+                    video_ids = find_video_ids(body)
+                    for index, cached in enumerate(crawl_cache.mget(video_ids)):
+                        video_id = video_ids[index]
+                        if not cached:
+                            print(f"https://www.youtube.com/watch?v={video_id}", "from playlist", f"https://www.youtube.com/playlist?list={target}")
+                            crawl_queue.put((VIDEO, video_id))
+
             except (socket.timeout, ssl.SSLError):
                 try: crawl_cache.delete(target)
                 except: pass
