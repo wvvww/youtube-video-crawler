@@ -195,12 +195,11 @@ def crawler(
                             crawl_queue.put((target_type, target))
                             break
                         
-                        print(resp.split(b"\r\n\r\n", 1)[0])
-                        body = resp.split(b"\r\n\r\n", 1)[1]
-                        while not body.endswith(b"0\r\n\r\n"):
+                        resp, body = resp.split(b"\r\n\r\n", 1)
+                        length = int(resp.split(b"Content-Length: ", 1)[1].split(b"\r\n", 1)[0])
+                        while length > len(body):
                             body += sock.recv(100000)
-                        body = parse_chunked_body(body)
-                        print(body)
+                        body = brotli.decompress(body)
 
                         channel_ids = find_channel_ids(body)
                         for index, cached in enumerate(crawl_cache.mget(channel_ids)):
