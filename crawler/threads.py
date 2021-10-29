@@ -70,7 +70,6 @@ def crawler(
             target = None
             try:
                 target_type, target = crawl_queue.recv()
-
                 if crawl_cache.get(target):
                     continue
 
