@@ -1,6 +1,6 @@
 # youtube-crawler
  
-An attempt at finding truly random content on youtube by crawling comments and their authors' videos.
+An attempt at finding truly random content on youtube by crawling comments and their authors' videos & playlists.
 
 # Setup
 Requirements:
