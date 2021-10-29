@@ -24,7 +24,7 @@ def find_channel_ids(data: bytes):
     index = 0
     while True:
         offset = data.find(b'browseId": "', index)
-        if offset == -1: return ids
+        if offset == -1: return tuple(ids)
         ids.add(data[offset+12:offset+36].decode())
         index = offset + 24
 
@@ -33,7 +33,7 @@ def find_video_ids(data: bytes):
     index = 0
     while True:
         offset = data.find(b"?v=", index)
-        if offset == -1: return ids
+        if offset == -1: return tuple(ids)
         ids.add(data[offset+3:offset+14].decode())
         index = offset + 11
 
@@ -100,8 +100,10 @@ def crawler(
                         body += sock.recv(100000)
                     body = parse_chunked_body(body)
                     
-                    for video_id in find_video_ids(body):
-                        if not crawl_cache.get(video_id):
+                    video_ids = find_video_ids(body)
+                    for index, cached in enumerate(crawl_cache.mget(video_ids)):
+                        video_id = video_ids[index]
+                        if not cached:
                             print(f"https://www.youtube.com/watch?v={video_id}")
                             crawl_queue.put(("video", video_id))
                         
@@ -134,8 +136,10 @@ def crawler(
                             body += sock.recv(100000)
                         body = parse_chunked_body(body)
 
-                        for video_id in find_video_ids(body):
-                            if not crawl_cache.get(video_id):
+                        video_ids = find_video_ids(body)
+                        for index, cached in enumerate(crawl_cache.mget(video_ids)):
+                            video_id = video_ids[index]
+                            if not cached:
                                 print(f"https://www.youtube.com/watch?v={video_id}")
                                 crawl_queue.put(("video", video_id))
 
@@ -194,8 +198,10 @@ def crawler(
                             body += sock.recv(100000)
                         body = parse_chunked_body(body)
 
-                        for channel_id in find_channel_ids(body):
-                            if not crawl_cache.get(channel_id):
+                        channel_ids = find_channel_ids(body)
+                        for index, cached in enumerate(crawl_cache.mget(channel_ids)):
+                            channel_id = channel_ids[index]
+                            if not cached:
                                 crawl_queue.put(("channel", channel_id))
 
                         if not b"RELOAD_CONTINUATION_SLOT_BODY" in body:
