@@ -1,6 +1,7 @@
 from multiprocessing import Queue
 from typing import Iterator
 from redis import Redis
+from time import perf_counter
 import socket
 import ssl
 import zlib
@@ -69,12 +70,14 @@ def crawler(
         while True:
             target = None
             try:
+                t = perf_counter()
                 target_type, target = crawl_queue.get(True)
 
                 if crawl_cache.get(target):
                     continue
 
                 crawl_cache.set(target, 1)
+                print("%.5f" % (perf_counter()-t))
 
                 if target_type == "channel":
                     sock.sendall((
