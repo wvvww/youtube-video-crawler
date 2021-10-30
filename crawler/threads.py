@@ -91,6 +91,7 @@ def crawler(
                         "Host: www.youtube.com\r\n"
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
                         "Accept-Encoding: br\r\n"
+                        "Cookie: CONSENT=YES+cb.20211026-09-p1.en+FX+731\r\n"
                         "\r\n"
                     ).encode())
                     resp = sock.recv(1024000)
@@ -122,6 +123,7 @@ def crawler(
                         "Host: www.youtube.com\r\n"
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
                         "Accept-Encoding: br\r\n"
+                        "Cookie: CONSENT=YES+cb.20211026-09-p1.en+FX+731\r\n"
                         "\r\n"
                     ).encode())
                     resp = sock.recv(1024000)
@@ -162,6 +164,7 @@ def crawler(
                             "Accept-Encoding: br\r\n"
                             f"Content-Length: {len(payload)}\r\n"
                             "Content-Type: application/json\r\n"
+                            "Cookie: CONSENT=YES+cb.20211026-09-p1.en+FX+731\r\n"
                             "\r\n"
                             f"{payload}"
                         ).encode())
@@ -197,6 +200,7 @@ def crawler(
                         "Host: www.youtube.com\r\n"
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
                         "Accept-Encoding: br\r\n"
+                        "Cookie: CONSENT=YES+cb.20211026-09-p1.en+FX+731\r\n"
                         "\r\n"
                     ).encode())
                     resp = sock.recv(1024000)
@@ -226,6 +230,7 @@ def crawler(
                             "Accept-Encoding: br\r\n"
                             f"Content-Length: {len(payload)}\r\n"
                             "Content-Type: application/json\r\n"
+                            "Cookie: CONSENT=YES+cb.20211026-09-p1.en+FX+731\r\n"
                             "\r\n"
                             f"{payload}"
                         ).encode())
@@ -260,6 +265,7 @@ def crawler(
                         "Host: www.youtube.com\r\n"
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
                         "Accept-Encoding: br\r\n"
+                        "Cookie: CONSENT=YES+cb.20211026-09-p1.en+FX+731\r\n"
                         "\r\n"
                     ).encode())
                     resp = sock.recv(1024000)
