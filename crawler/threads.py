@@ -261,7 +261,7 @@ def crawler(
 
                 elif target_type == PLAYLIST:
                     sock.sendall((
-                        f"GET /watch?v={target} HTTP/1.1\r\n"
+                        f"GET /playlist?list={target} HTTP/1.1\r\n"
                         "Host: www.youtube.com\r\n"
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36\r\n"
                         "Accept-Encoding: br\r\n"
